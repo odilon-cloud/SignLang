@@ -18,7 +18,7 @@ from model import Network
 # Check if GPU is available
 DEVICE = 'cpu'
 
-model = torch.load('model_trained.pt', map_location=DEVICE, weights_only=True)
+model = torch.load('model.pt')
 
 # If the model was wrapped with DataParallel, unwrap it
 if isinstance(model, torch.nn.DataParallel):
