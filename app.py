@@ -3,12 +3,9 @@ from flask import Response, request
 from flask import Flask, render_template
 import threading
 import argparse
-# import datetime
-# import imutils
 import time
 from flask import jsonify
 import autocomplete
-
 import cv2
 import numpy as np
 import torch
@@ -25,10 +22,6 @@ if isinstance(model, torch.nn.DataParallel):
 model = model.to(DEVICE)
 model.eval()
 
-# signs = {'0': 'A', '1': 'B', '2': 'C', '3': 'D', '4': 'E', '5': 'F', '6': 'G', '7': 'H', '8': 'I',
-#         '10': 'K', '11': 'L', '12': 'M', '13': 'N', '14': 'O', '15': 'P', '16': 'Q', '17': 'R',
-#         '18': 'S', '19': 'T', '20': 'U', '21': 'V', '22': 'W', '23': 'X', '24': 'Y'}
-
 signs = {'0': 'A', '1': 'B', '2': 'C', '3': 'D', '4': 'E', '5': 'F', '6': 'G', '7': 'H', '8': 'I',
         '9': 'J', '10': 'K', '11': 'L', '12': 'M', '13': 'N', '14': 'O', '15': 'P', '16': 'Q', '17': 'R',
         '18': 'S', '19': 'T', '20': 'U', '21': 'V', '22': 'W', '23': 'X', '24': 'Y', '25': 'Z', '26': 'del', '27':'nothing', '28': 'space'}
@@ -42,8 +35,8 @@ full_sentence = ''
 text_suggestion = ''
 
 app = Flask(__name__, 
-    static_folder='static',  # Specify the static folder
-    template_folder='templates'  # Specify the templates folder
+    static_folder='static', 
+    template_folder='templates' 
 )
 # Flask will automatically serve files from the static folder
 
@@ -113,7 +106,6 @@ def detect_gesture(frameCount):
         frame = cv2.putText(frame, detected, (60,285), font, 1, (255,0,0), 2, cv2.LINE_AA)
 
         frame = cv2.rectangle(frame, (20, 20), (250, 250), (0, 255, 0), 3)
-        # frame = cv2.rectangle(frame, (450, 20), (680, 250), (0, 255, 0), 3)
 
 
         with lock:
