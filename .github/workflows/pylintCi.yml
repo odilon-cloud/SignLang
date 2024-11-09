@@ -1,38 +1,43 @@
-name: Pylint
+name: PythonFlaskRun Check
 
 on: [push]
 
 jobs:
-  build:
+  check_flask:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10"]
+      
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
-    - name: Install requirements
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: echo workspace
-      run: echo $GITHUB_WORKSPACE
-      shell: bash
+      - name: Check out the code
+        uses: actions/checkout@v3
 
-    - name: Hello world action step
-      id: hello
-      uses: ozada/test-action@v1
-      with:
-        who-to-greet: 'Sat Ai Team'
-    - name: Get the output time
-      run: echo "The time was ${{ steps.hello.outputs.time }}"
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start Flask app
+        env:
+          FLASK_APP: app.py
+        run: |
+          nohup flask run &  # Run Flask in the background
+          sleep 5  # Wait for the server to start
+
+      - name: Check if Flask app is running
+        run: |
+          if curl --fail http://127.0.0.1:5000/; then
+            echo "Flask app is running."
+          else
+            echo "Flask app is not running."
+            exit 1
+          fi
+      - name: Stop Flask app
+        run: |
+          pkill -f "flask run"  # Stops the Flask app process
